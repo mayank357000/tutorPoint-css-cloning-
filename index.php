@@ -1,67 +1,110 @@
-<?php include("main/head.php");
- include("DB/db.php");
+<?php session_start();
+    include("../DB/db.php");   
 ?>
-  <div class="grid-y">
-    <div class="grid-container ">
-    
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+<div class="container">
 <?php
-        
-        if(isset($_GET['cid'])) {
-          echo "<div class='grid-x grid-margin-x callout'>
-          <div class='cell medium-3'>
-          <ul class='vertical menu'>";
+    $userinfo = $_SESSION['unique'];
+    //echo ($userinfo);
+    if(!isset($_SESSION['unique'])){
 
-          $courseid = $_GET['cid'];
-          $sql = "select * from subcourse where cid = $courseid";
+        header('Location: login.php');
+    }
+?>
 
-          $result  = mysqli_query($connection, $sql);
 
-          while($row = mysqli_fetch_assoc($result)){
+<script>
 
-            // echo ($row['Title']);
+function getId(){
 
-            $Title = $row['Title'];
-            $titleId = $row['titleId'];
+    document.uservalue = document.getElementById("inputGroupSelect02").value;
+    //alert();
+}
 
-            echo "<li><a href='index.php?Title=$titleId&cid=$courseid' class='callout'>$Title</a></li>";
-          
-          }
-           
-        } else {
-          echo "<h1 style='font-family: monospace; color: #1e90ff; text-shadow: 6px 6px 3px rgba(44,47,51, 0.2);'>Tutorials Point</h1>";
-      }
-        
+addEventListener("change", getId, false); 
 
- ?>         
-      </ul>
-      </div>
-      <div class="cell medium-9">
-      <?php
 
-        
-          if(isset($_GET['Title']) && isset($titleId)) {
-            $id = $_GET['Title'];
-            $fetcharticle = "select * from article_name where id =$id";
 
-            $result = mysqli_query($connection,$fetcharticle);
-  
-            while($row = mysqli_fetch_assoc($result)){
-  
-                $article = $row['article'];
-  
-                echo ($article);
-  
-            }
-  
-          }
-          
-       
-      ?>
-      </div>
 
+
+</script>
+
+
+<!-- A grey horizontal navbar that becomes vertical on small screens -->
+             <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+                    <!-- Links -->
+                    <div class="collapse navbar-collapse justify-content-end" id="nav-content">
+                    <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"><?php echo "Login As:".$userinfo; ?></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Timeline</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="logout.php">Logout</a>
+                    </ul>
+                    </div>
+             </nav>    
+                     <br>
+                     <br>
+             <div class="breadcumb">
+                            <form action="" method="post"> 
+                                <input type="text" placeholder="Enter New Course Name" class="form-control" name="course" required=""> 
+                                <br>
+                                <input type="submit" value="Add New Course" class="btn btn-primary">
+                            </form>      
+             </div>
+             <br>
+             <br>
+                        
+             <?php
+                    if(isset($_POST['course'])){
+                        
+                        $course = $_POST['course'];
+                       // echo ($course);
+
+                        $valuecheck = "select coursename from courses where coursename ='$course'";
+                        $excquery = mysqli_query($connection,$valuecheck);
+                       // echo ($valuecheck);
+
+                        $fetchvalue = mysqli_fetch_row($excquery);
+
+
+                        if($fetchvalue > 0){
+
+                            echo "<script>";
+                            echo "alert('Course Alredy Exits');";
+                            echo "</script>";
+                        }else{
+
+                            $insert = "insert into courses(coursename)value('$course')";
+                            echo ($insert);
+                            $excquery = mysqli_query($connection,$insert);
+                            if($excquery){
+                                echo "<script>";
+                                echo "alert('Course Added Scuessfully');";
+                                echo "</script>"; 
+                            }
+
+                        }
+                 
+                    }
+
+             ?>
+             
+             <?php  include("example.php"); ?>
     </div>
     </div>
- </div>  
-  <?php include("main/footer.php"); ?>
-
+</body>
+</html>
